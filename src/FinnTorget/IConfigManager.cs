@@ -2,7 +2,7 @@
 {
     public interface IConfigManager
     {
-        FinnConfig LoadSettings();
-        void SaveSettings(FinnConfig config);
+        FinnConfig LoadConfiguration();
+        void SaveConfiguration(FinnConfig config);
     }
 }

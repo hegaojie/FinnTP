@@ -48,7 +48,7 @@ namespace FinnTorget
             MessageBox.Show(message);
         }
 
-        public FinnConfig LoadSettings()
+        public FinnConfig LoadConfiguration()
         {
             var config = new FinnConfig();
             try
@@ -57,34 +57,34 @@ namespace FinnTorget
                 {
                     var line = reader.ReadLine();
                     if (!String.IsNullOrEmpty(line))
-                        config._startTime = ParseDateTime(line);
+                        config.StartTime = ParseDateTime(line);
 
                     line = reader.ReadLine();
                     if (!String.IsNullOrEmpty(line))
-                        config._interval = Convert.ToDouble(line);
+                        config.Interval = Convert.ToDouble(line);
 
                     line = reader.ReadLine();
-                    config._url = !String.IsNullOrEmpty(line) ? line : DEFAULT_URL;
+                    config.Url = !String.IsNullOrEmpty(line) ? line : DEFAULT_URL;
                 }
             }
             catch (Exception exc)
             {
                 ShowMessageBox(LOAD_ERROR_MESSAGE);
-                config = LoadDefaultSettings();
+                config = LoadDefaultConfiguration();
             }
             return config;
         }
         
-        public void SaveSettings(FinnConfig config)
+        public void SaveConfiguration(FinnConfig config)
         {
             try
             {
                 using (var writer = CreateWriter(_file))
                 {
-                    var str = config._startTime.ToString(_cultrueInfo);
+                    var str = config.StartTime.ToString(_cultrueInfo);
                     writer.WriteLine(str);
-                    writer.WriteLine(config._interval.ToString(CultureInfo.InvariantCulture));
-                    writer.WriteLine(config._url);
+                    writer.WriteLine(config.Interval.ToString(CultureInfo.InvariantCulture));
+                    writer.WriteLine(config.Url);
                 }
             }
             catch (Exception exc)
@@ -93,13 +93,13 @@ namespace FinnTorget
             }
         }
 
-        private FinnConfig LoadDefaultSettings()
+        private FinnConfig LoadDefaultConfiguration()
         {
             var config = new FinnConfig
                 {
-                    _startTime = ParseDateTime(DateTime.Now.ToString(_cultrueInfo)),
-                    _interval = _interval,
-                    _url = DEFAULT_URL
+                    StartTime = ParseDateTime(DateTime.Now.ToString(_cultrueInfo)),
+                    Interval = _interval,
+                    Url = DEFAULT_URL
                 };
             return config;
         }

@@ -23,11 +23,9 @@ namespace FinnTorget
 
         private void TbStuffName_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Application.Current.MainWindow.Show();
-            Application.Current.MainWindow.Activate();
             var mainWin = Application.Current.MainWindow as MainWindow;
             if (mainWin != null)
-                mainWin.IsActivated = true;
+                mainWin.ShowAndActivate();
         }
 
         public event CloseButtonEventHandler CloseButtonPressed;

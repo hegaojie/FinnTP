@@ -63,6 +63,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="FetchResult.cs" />
+    <Compile Include="FinnConfig.cs" />
     <Compile Include="FinnConfigManager.cs" />
     <Compile Include="IConfigManager.cs" />
     <Compile Include="Interop\Class1.cs" />

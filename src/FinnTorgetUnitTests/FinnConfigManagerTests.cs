@@ -36,7 +36,7 @@ namespace FinnTorgetUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _config = _manager.LoadSettings();
+                    _config = _manager.LoadConfiguration();
                 }
 
                 [Test]
@@ -48,13 +48,13 @@ namespace FinnTorgetUnitTests
                 [Test]
                 public void interval_equal_to_30_seconds_by_default()
                 {
-                    Assert.AreEqual(_config._interval, FinnConfigManager.DEFAULT_INTERVAL);
+                    Assert.AreEqual(_config.Interval, FinnConfigManager.DEFAULT_INTERVAL);
                 }
 
                 [Test]
                 public void start_time_equal_to_now()
                 {
-                    Assert.AreEqual(DateTime.Now.ToLongTimeString(), _config._startTime.ToLongTimeString());
+                    Assert.AreEqual(DateTime.Now.ToLongTimeString(), _config.StartTime.ToLongTimeString());
                 }
             }
 
@@ -64,7 +64,7 @@ namespace FinnTorgetUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _manager.SaveSettings(new FinnConfig());
+                    _manager.SaveConfiguration(new FinnConfig());
                 }
 
                 [Test]
@@ -94,7 +94,7 @@ namespace FinnTorgetUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _config = _manager.LoadSettings();
+                    _config = _manager.LoadConfiguration();
                 }
 
                 [Test]
@@ -106,13 +106,13 @@ namespace FinnTorgetUnitTests
                 [Test]
                 public void start_time_is_loaded()
                 {
-                    Assert.AreEqual(new DateTime(), _config._startTime);
+                    Assert.AreEqual(new DateTime(), _config.StartTime);
                 }
 
                 [Test]
                 public void interval_is_loaded()
                 {
-                    Assert.AreEqual(0, _config._interval);
+                    Assert.AreEqual(0, _config.Interval);
                 }
             }
 
@@ -122,7 +122,7 @@ namespace FinnTorgetUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _manager.SaveSettings(new FinnConfig());
+                    _manager.SaveConfiguration(new FinnConfig());
                 }
 
                 [Test]

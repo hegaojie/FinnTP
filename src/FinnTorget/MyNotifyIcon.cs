@@ -207,5 +207,13 @@ namespace FinnTorget
         }
 
         #endregion
+
+        public void ClearAllPopups()
+        {
+            while (_popups.Count > 0)
+            {
+                _popups[0].Close();
+            }
+        }
     }
 }

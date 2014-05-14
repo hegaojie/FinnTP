@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Media;
 using System.Net;
 using System.Text;
@@ -13,14 +12,20 @@ namespace FinnTorget
     public class Picker
     {
         private WebClient _wc;
+
         private DispatcherTimer _timer;
+        
         private FinnConfig _config;
 
         public Picker(WebClient wc, FinnConfig config)
         {
             _wc = wc;
-            _wc.Encoding = Encoding.UTF8;
             _config = config;
+
+            _items = new List<TorgetItem>();
+
+            _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromSeconds(_config.Interval) };
+            _timer.Tick += RunScan;
         }
 
         private FetchResult FetchTorgetNew(int pageNo)
@@ -86,7 +91,7 @@ namespace FinnTorget
 
             var publishTime = timeNode.InnerText;
 
-            var dt = ParseDateTime(publishTime);
+            var dt = _config.FromDateTimeString(publishTime);
 
             return dt;
         }
@@ -95,7 +100,7 @@ namespace FinnTorget
         {
             var url = GetUrl(pageNo);
 
-            var html = _wc.DownloadString(url);
+            var html = DownloadString(url);
 
             var htmlDoc = new HtmlDocument { OptionFixNestedTags = true, OptionAutoCloseOnEnd = true };
 
@@ -108,21 +113,19 @@ namespace FinnTorget
 
         private string GetUrl(int pageNo)
         {
-            return _config._url.Replace("&page=", "&page=" + pageNo);
+            return _config.Url.Replace("&page=", "&page=" + pageNo);
         }
 
         private bool IsNew(DateTime dateTime)
         {
 
 
-            var ret = DateTime.Compare(_config._startTime, dateTime) <= 0;
+            var ret = DateTime.Compare(_config.StartTime, dateTime) <= 0;
             return ret;
         }
 
-        public void RunTimer(double interval)
+        public void RunTimer()
         {
-            _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromSeconds(interval) };
-            _timer.Tick += RunScan;
             _timer.Start();
         }
 
@@ -146,27 +149,24 @@ namespace FinnTorget
             } while (result.Continue);
 
             if (nextNotifyTimeStart.HasValue)
-                _config._startTime = nextNotifyTimeStart.Value;
+                _config.StartTime = nextNotifyTimeStart.Value;
 
             RaiseScanCompleted();
         }
 
-        public DateTime ParseDateTime(string dateTime)
+        public void UpdateConfig(FinnConfig config)
         {
-            try
-            {
-                DateTime dt;
-                DateTime.TryParse(dateTime, new CultureInfo("nb-NO"), DateTimeStyles.None, out dt);
-                return dt;
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message);
-            }
-            return new DateTime();
+            _timer.Stop();
+            _timer.Interval = TimeSpan.FromSeconds(config.Interval);
+            _timer.Start();
         }
 
-        private IList<TorgetItem> _items = new List<TorgetItem>();
+        private readonly IList<TorgetItem> _items;
+
+        protected virtual string DownloadString(string url)
+        {
+            return _wc.DownloadString(url);
+        }
 
         #region Events
 
@@ -182,4 +182,5 @@ namespace FinnTorget
     }
 
     public delegate void ScanCompletedHandler(IEnumerable<TorgetItem> torgets);
+
 }

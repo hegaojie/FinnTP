@@ -48,7 +48,7 @@ namespace FinnTorget
                 fb.CloseButtonPressed -= Close;
         }
 
-        private void Close()
+        public void Close()
         {
             if (!Application.Current.Dispatcher.CheckAccess())
             {

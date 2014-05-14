@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Threading;
 
 namespace FinnTorget
 {
@@ -12,6 +13,7 @@ namespace FinnTorget
     {
         private const int TIMEOUT = 4000;
         public const int MAX_POPUPS = 6;
+        private const int BLINK_INVERVAL_MS = 500;
 
         private NotifyIconData _iconData;
 
@@ -29,6 +31,8 @@ namespace FinnTorget
 
         private readonly Icon _notifyIcon;
 
+        private DispatcherTimer _timer;
+
         public int PopupCount { get { return _popups.Count; } }
 
         public MyNotifyIcon(Action<MouseEvent> mouseEventHandler)
@@ -45,7 +49,7 @@ namespace FinnTorget
             _startIcon = new Icon(@"Icons\emotion-7.ico");
             _notifyIcon = new Icon(@"Icons\emotion-14.ico");
 
-            
+
             if (ContextMenu == null)
                 ContextMenu = new ContextMenu();
 
@@ -145,6 +149,36 @@ namespace FinnTorget
         public void RestoreIcon()
         {
             _iconData.hIcon = _startIcon.Handle;
+            Win32Api.Shell_NotifyIcon(IconMessageType.NIM_MODIFY, ref _iconData);
+            _timer.Stop();
+        }
+
+        public void BlinkIcon()
+        {
+            InitializeTimer();
+            _timer.Start();
+        }
+
+        private void InitializeTimer()
+        {
+            if (_timer != null) 
+                return;
+
+            _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(BLINK_INVERVAL_MS) };
+            _timer.Tick += TimerOnTick;
+        }
+
+        private void TimerOnTick(object sender, EventArgs eventArgs)
+        {
+            if (_iconData.hIcon == _startIcon.Handle)
+            {
+                _iconData.hIcon = _notifyIcon.Handle;
+            }
+            else if (_iconData.hIcon == _notifyIcon.Handle)
+            {
+                _iconData.hIcon = _startIcon.Handle;
+            }
+
             Win32Api.Shell_NotifyIcon(IconMessageType.NIM_MODIFY, ref _iconData);
         }
 

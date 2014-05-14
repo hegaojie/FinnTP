@@ -167,7 +167,7 @@ namespace FinnTorget
             if (newTorgetAdded)
             {
                 OnPropertyChanged("Items");
-                _notifyIcon.ModifyIcon();
+                _notifyIcon.BlinkIcon();
             }
         }
 

@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 
-namespace FinnTorget
+namespace MyNotifyIcon
 {
-    public delegate void CloseButtonEventHandler();
-
-    public delegate void ClickTextEventHandler();
-
     public class MyPopup : Popup
     {
         private readonly DispatcherTimer _timer;
 
         public string Id { get; private set; }
 
-        public MyPopup(int timeout, FancyBalloon balloon)
+        public MyPopup(int timeout, UIElement balloon)
         {
             Child = balloon;
 
@@ -36,16 +31,16 @@ namespace FinnTorget
 
         private void SubscribeCloseEvent()
         {
-            var fb = Child as FancyBalloon;
+            var fb = Child as IBalloon;
             if (fb != null)
-                fb.CloseButtonPressed += Close;
+                fb.Closing += Close;
         }
 
         private void UnsubscribeCloseEvent()
         {
-            var fb = Child as FancyBalloon;
+            var fb = Child as IBalloon;
             if (fb != null)
-                fb.CloseButtonPressed -= Close;
+                fb.Closing -= Close;
         }
 
         public void Close()
@@ -80,17 +75,9 @@ namespace FinnTorget
             {
                 AllowsTransparency = true;
                 PopupAnimation = PopupAnimation.Slide;
-                //Placement = PlacementMode.AbsolutePoint;
-                
-
 
                 HorizontalOffset = pos.OffsetX;
                 VerticalOffset = pos.OffsetY;
-
-                //assign this instance as an attached property
-                //TODO:SetParentTaskbarIcon(balloon, this);
-                //fire attached event
-                //TODO:RaiseBalloonShowingEvent(balloon, this);
 
                 IsOpen = true;
                 StaysOpen = true;

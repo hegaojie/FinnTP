@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinnTorget", "FinnTorget\Fi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinnTorgetUnitTests", "FinnTorgetUnitTests\FinnTorgetUnitTests.csproj", "{70A1905C-3F95-4231-A13A-03D7783B2AE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNotifyIcon", "MyNotifyIcon\MyNotifyIcon.csproj", "{4D133E1E-0179-4393-9457-8841B3B031BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{70A1905C-3F95-4231-A13A-03D7783B2AE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70A1905C-3F95-4231-A13A-03D7783B2AE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70A1905C-3F95-4231-A13A-03D7783B2AE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D133E1E-0179-4393-9457-8841B3B031BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D133E1E-0179-4393-9457-8841B3B031BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D133E1E-0179-4393-9457-8841B3B031BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D133E1E-0179-4393-9457-8841B3B031BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿namespace FinnTorget
+﻿namespace MyNotifyIcon
 {
     public class Position
     {

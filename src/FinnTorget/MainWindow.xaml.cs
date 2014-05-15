@@ -8,11 +8,13 @@ using System.Linq;
 using System.Media;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Navigation;
 using FinnTorget.Annotations;
+using MyNotifyIcon;
+using MyNotifyIcon.Interop;
+using Point = MyNotifyIcon.Interop.Point;
 
 namespace FinnTorget
 {
@@ -21,7 +23,7 @@ namespace FinnTorget
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private MyNotifyIcon _notifyIcon;
+        private WPFNotifyIcon _notifyIcon;
 
         private readonly FinnConfig _config;
 
@@ -155,7 +157,7 @@ namespace FinnTorget
                     _items.Add(torgetItem);
                     newTorgetAdded = true;
 
-                    if (_notifyIcon.PopupCount < MyNotifyIcon.MAX_POPUPS)
+                    if (_notifyIcon.PopupCount < WPFNotifyIcon.MAX_POPUPS)
                     {
                         var fb = new FancyBalloon { BalloonText = torgetItem.Text };
                         _notifyIcon.ShowBalloon(fb);
@@ -177,6 +179,7 @@ namespace FinnTorget
             {
                 case MouseEvent.RightMouseDown:
                     var position = new Point();
+
                     Win32Api.GetCursorPos(ref position);
 
                     _notifyIcon.ShowContextMenu(position);
@@ -247,7 +250,7 @@ namespace FinnTorget
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            _notifyIcon = new MyNotifyIcon(MsgSinkOnMouseEventReceived);
+            _notifyIcon = new WPFNotifyIcon(MsgSinkOnMouseEventReceived);
             _notifyIcon.IconRemoved += NotifyIconOnIconRemoved;
             _notifyIcon.AddIcon();
 
@@ -255,13 +258,6 @@ namespace FinnTorget
         }
 
         #endregion
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Point
-    {
-        public int X;
-        public int Y;
     }
 
     public class MyStreamReader : StreamReader, IStreamReader

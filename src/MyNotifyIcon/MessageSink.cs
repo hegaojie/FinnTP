@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Windows;
-using FinnTorget.Interop;
+using MyNotifyIcon.Interop;
 
-namespace FinnTorget
+namespace MyNotifyIcon
 {
     public class MessageSink : IDisposable
     {
@@ -52,7 +51,7 @@ namespace FinnTorget
 
                 case MessageType.MOUSE_RBUTTON_RELEASE:
                     break;
-                
+
                 case MessageType.MOUSE_LBUTTON_DOUBLE_CLICK:
                     MouseEventReceived(MouseEvent.LeftMouseDoubleClick);
                     break;
@@ -74,13 +73,13 @@ namespace FinnTorget
             MOUSE_LBUTTON_PRESS = 0x0201,
 
             MOUSE_LBUTTON_RELEASE = 0x0202,
-            
+
             MOUSE_LBUTTON_DOUBLE_CLICK = 0x0203,
-            
+
             MOUSE_RBUTTON_PRESS = 0x0204,
-            
+
             MOUSE_RBUTTON_RELEASE = 0x0205,
-            
+
             MOUSE_RBUTTON_DOUBLE_CLICK = 0x0206,
         }
 
@@ -93,23 +92,10 @@ namespace FinnTorget
         private void Dispose(bool disposing)
         {
             if (disposing)
-            {    
+            {
                 Win32Api.DestroyWindow(MsgWinHandle);
                 _msgHandler = null;
             }
         }
-    }
-
-    public enum MouseEvent
-    {
-        RightMouseUp,
-
-        RightMouseDown,
-
-        LeftMouseDoubleClick,
-
-        LeftMouseDown,
-
-        LeftMouseUp,
     }
 }

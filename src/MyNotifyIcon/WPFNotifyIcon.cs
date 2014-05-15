@@ -6,14 +6,20 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using MyNotifyIcon.Interop;
+using Point = MyNotifyIcon.Interop.Point;
 
-namespace FinnTorget
+namespace MyNotifyIcon
 {
-    public class MyNotifyIcon : FrameworkElement
+    public delegate void ClosingEventHandler();
+
+    public delegate void ClickTextEventHandler();
+
+    public class WPFNotifyIcon : FrameworkElement
     {
         private const int TIMEOUT = 4000;
         public const int MAX_POPUPS = 6;
-        private const int BLINK_INVERVAL_MS = 500;
+        private const int BLINK_INVERVAL_MILLISECONDS = 500;
 
         private NotifyIconData _iconData;
 
@@ -21,11 +27,9 @@ namespace FinnTorget
 
         private readonly int _timeOut;
 
-        private readonly int _offsetY = 120;
-
         private readonly IList<MyPopup> _popups = new List<MyPopup>();
 
-        private readonly PositionQueue _queue;
+        private PositionQueue _queue;
 
         private readonly Icon _startIcon;
 
@@ -35,20 +39,15 @@ namespace FinnTorget
 
         public int PopupCount { get { return _popups.Count; } }
 
-        public MyNotifyIcon(Action<MouseEvent> mouseEventHandler)
+        public WPFNotifyIcon(Action<MouseEvent> mouseEventHandler)
         {
             _msgSink = new MessageSink();
             _msgSink.MouseEventReceived += mouseEventHandler;
-
-            var x = SystemParameters.PrimaryScreenWidth - 240;
-            var y = SystemParameters.PrimaryScreenHeight - 120;
-            _queue = new PositionQueue(x, y, _offsetY);
 
             _timeOut = TIMEOUT;
 
             _startIcon = new Icon(@"Icons\emotion-7.ico");
             _notifyIcon = new Icon(@"Icons\emotion-14.ico");
-
 
             if (ContextMenu == null)
                 ContextMenu = new ContextMenu();
@@ -67,7 +66,7 @@ namespace FinnTorget
                 IconRemoved(this);
         }
 
-        public void ShowBalloon(FancyBalloon balloonContent)
+        public void ShowBalloon(UserControl balloonContent)
         {
             var popup = new MyPopup(_timeOut, balloonContent);
             popup.IsActivated += PopupOnIsActivated;
@@ -76,11 +75,22 @@ namespace FinnTorget
             Position pos;
             lock (this)
             {
+                InitializePositionQueue(balloonContent.ActualWidth, balloonContent.ActualHeight);
                 pos = _queue.ObtainPosition(popup.Id);
                 _popups.Add(popup);
             }
 
             popup.Show(pos);
+        }
+
+        private void InitializePositionQueue(double offsetX, double offsetY)
+        {
+            if (_queue != null)
+                return;
+
+            var x = SystemParameters.PrimaryScreenWidth - offsetX;
+            var y = SystemParameters.PrimaryScreenHeight - offsetY;
+            _queue = new PositionQueue(x, y, y);
         }
 
         public void ShowContextMenu(Point position)
@@ -161,10 +171,10 @@ namespace FinnTorget
 
         private void InitializeTimer()
         {
-            if (_timer != null) 
+            if (_timer != null)
                 return;
 
-            _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(BLINK_INVERVAL_MS) };
+            _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(BLINK_INVERVAL_MILLISECONDS) };
             _timer.Tick += TimerOnTick;
         }
 
@@ -188,22 +198,22 @@ namespace FinnTorget
         /// An attached property that is assigned to 
         /// </summary>  
         public static readonly DependencyProperty ParentTaskbarIconProperty =
-            DependencyProperty.RegisterAttached("ParentTaskbarIcon", typeof(MyNotifyIcon), typeof(MyNotifyIcon));
+            DependencyProperty.RegisterAttached("ParentTaskbarIcon", typeof(WPFNotifyIcon), typeof(WPFNotifyIcon));
 
         /// <summary>
         /// Gets the ParentTaskbarIcon property.  This dependency property 
         /// indicates ....
         /// </summary>
-        public static MyNotifyIcon GetParentTaskbarIcon(DependencyObject d)
+        public static WPFNotifyIcon GetParentTaskbarIcon(DependencyObject d)
         {
-            return (MyNotifyIcon)d.GetValue(ParentTaskbarIconProperty);
+            return (WPFNotifyIcon)d.GetValue(ParentTaskbarIconProperty);
         }
 
         /// <summary>
         /// Sets the ParentTaskbarIcon property.  This dependency property 
         /// indicates ....
         /// </summary>
-        public static void SetParentTaskbarIcon(DependencyObject d, MyNotifyIcon value)
+        public static void SetParentTaskbarIcon(DependencyObject d, WPFNotifyIcon value)
         {
             d.SetValue(ParentTaskbarIconProperty, value);
         }
@@ -216,7 +226,7 @@ namespace FinnTorget
         /// CustomBalloon Read-Only Dependency Property
         /// </summary>
         private static readonly DependencyPropertyKey CustomBalloonPropertyKey
-            = DependencyProperty.RegisterReadOnly("CustomBalloon", typeof(Popup), typeof(MyNotifyIcon),
+            = DependencyProperty.RegisterReadOnly("CustomBalloon", typeof(Popup), typeof(WPFNotifyIcon),
                 new FrameworkPropertyMetadata(null));
 
         public static readonly DependencyProperty CustomBalloonProperty

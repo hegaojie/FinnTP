@@ -66,18 +66,10 @@
     <Compile Include="FinnConfig.cs" />
     <Compile Include="FinnConfigManager.cs" />
     <Compile Include="IConfigManager.cs" />
-    <Compile Include="Interop\Class1.cs" />
-    <Compile Include="MessageSink.cs" />
-    <Compile Include="MyNotifyIcon.cs" />
-    <Compile Include="MyPopup.cs" />
-    <Compile Include="NotifyIconData.cs" />
     <Compile Include="Picker.cs" />
-    <Compile Include="Position.cs" />
-    <Compile Include="PositionQueue.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TorgetItem.cs" />
     <Compile Include="TrayInfo.cs" />
-    <Compile Include="Interop\Win32Api.cs" />
     <Page Include="FancyBalloon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -143,7 +135,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\MyNotifyIcon\MyNotifyIcon.csproj">
+      <Project>{4d133e1e-0179-4393-9457-8841b3b031bc}</Project>
+      <Name>MyNotifyIcon</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir Icons\

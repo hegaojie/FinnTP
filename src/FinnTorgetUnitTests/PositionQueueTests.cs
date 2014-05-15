@@ -1,7 +1,6 @@
 ﻿using System;
-using FinnTorget;
+using MyNotifyIcon;
 using NUnit.Framework;
-using System.Linq;
 
 namespace FinnTorgetUnitTests
 {

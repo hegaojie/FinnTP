@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace FinnTorget
+namespace MyNotifyIcon
 {
     public class PositionQueue
     {
@@ -17,7 +17,7 @@ namespace FinnTorget
             Positions = new List<Position>();
         }
 
-        public IList<Position> Positions { get; private set; } 
+        public IList<Position> Positions { get; private set; }
 
         public int Count
         {
@@ -26,7 +26,7 @@ namespace FinnTorget
 
         public void ReleasePosition(string id)
         {
-            var pos = Positions.FirstOrDefault(p => string.Equals(p.Id, id));
+            var pos = Positions.FirstOrDefault(p => string.Equals((string) p.Id, id));
             if (pos != null)
             {
                 pos.IsOccupied = false;
@@ -42,12 +42,12 @@ namespace FinnTorget
             if (Positions.Count == 0)
             {
                 var newPos = new Position
-                {
-                    Id = id,
-                    OffsetX = _origX,
-                    OffsetY = _origY,
-                    IsOccupied = true
-                };
+                    {
+                        Id = id,
+                        OffsetX = _origX,
+                        OffsetY = _origY,
+                        IsOccupied = true
+                    };
                 Positions.Add(newPos);
                 return newPos;
             }
@@ -55,12 +55,12 @@ namespace FinnTorget
             if (Positions.All(p => p.IsOccupied))
             {
                 var newPos = new Position
-                {
-                    Id = id,
-                    OffsetX = _origX,
-                    OffsetY = _origY - _offsetY * Positions.Count,
-                    IsOccupied = true
-                };
+                    {
+                        Id = id,
+                        OffsetX = _origX,
+                        OffsetY = _origY - _offsetY * Positions.Count,
+                        IsOccupied = true
+                    };
                 Positions.Add(newPos);
                 return newPos;
             }

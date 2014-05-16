@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{70A1905C-3F95-4231-A13A-03D7783B2AE8}</ProjectGuid>
+    <ProjectGuid>{8B7D4B5E-7DF7-43FE-AAE4-65D5F122679F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FinnTorgetUnitTests</RootNamespace>
-    <AssemblyName>FinnTorgetUnitTests</AssemblyName>
+    <RootNamespace>MyNotifyIconUnitTests</RootNamespace>
+    <AssemblyName>MyNotifyIconUnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NSubstitute">
-      <HintPath>..\packages\NSubstitute.1.7.2.0\lib\NET45\NSubstitute.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -45,21 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FinnConfigManagerTests.cs" />
+    <Compile Include="PositionQueueTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FinnTorget\FinnTorget.csproj">
-      <Project>{51974305-c841-4227-b68a-dd9f5751aec8}</Project>
-      <Name>FinnTorget</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MyNotifyIcon\MyNotifyIcon.csproj">
-      <Project>{4D133E1E-0179-4393-9457-8841B3B031BC}</Project>
-      <Name>MyNotifyIcon</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\MyNotifyIcon\MyNotifyIcon.csproj">
+      <Project>{4d133e1e-0179-4393-9457-8841b3b031bc}</Project>
+      <Name>MyNotifyIcon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

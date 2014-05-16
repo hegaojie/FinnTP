@@ -1,6 +1,6 @@
 ﻿namespace MyNotifyIcon
 {
-    public class Position
+    internal class Position
     {
         public string Id { get; set; }
 

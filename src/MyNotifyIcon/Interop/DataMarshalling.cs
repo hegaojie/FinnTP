@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace MyNotifyIcon.Interop
+namespace MyNotifyIcon
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Point
@@ -10,11 +10,24 @@ namespace MyNotifyIcon.Interop
         public int Y;
     }
 
+    public enum MouseEvent
+    {
+        RightMouseUp,
+
+        RightMouseDown,
+
+        LeftMouseDoubleClick,
+
+        LeftMouseDown,
+
+        LeftMouseUp,
+    }
+
     /// <summary>
     /// Marshal type of WNDCLASSEX
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct WindowClassEx
+    internal struct WindowClassEx
     {
         public uint cbSize;
         public uint style;
@@ -37,7 +50,7 @@ namespace MyNotifyIcon.Interop
     /// Used to receive window messages.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct WindowClass
+    internal struct WindowClass
     {
         public uint style;
         public WindowProcedureHandler lpfnWndProc;
@@ -54,7 +67,7 @@ namespace MyNotifyIcon.Interop
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct NotifyIconData
+    internal struct NotifyIconData
     {
         public uint cbSize;
 
@@ -90,21 +103,8 @@ namespace MyNotifyIcon.Interop
         public IntPtr hBalloonIcon;
     }
 
-    public enum MouseEvent
-    {
-        RightMouseUp,
-
-        RightMouseDown,
-
-        LeftMouseDoubleClick,
-
-        LeftMouseDown,
-
-        LeftMouseUp,
-    }
-
     [Flags]
-    public enum NotifyIconDisplayMode : uint
+    internal enum NotifyIconDisplayMode : uint
     {
         NIF_MESSAGE = 0x01,
         NIF_ICON = 0x02,
@@ -116,13 +116,13 @@ namespace MyNotifyIcon.Interop
         NIF_SHOWTIP = 0x80
     }
 
-    public enum StateMode : uint
+    internal enum StateMode : uint
     {
         NIS_HIDDEN = 0x01,
         NIS_SHAREDICON = 0x02
     }
 
-    public enum InfoFlag : uint
+    internal enum InfoFlag : uint
     {
         NIIF_NONE = 0x00000000,
         NIIF_INFO = 0x00000001,
@@ -135,7 +135,7 @@ namespace MyNotifyIcon.Interop
         NIIF_ICON_MASK = 0x0000000F
     }
 
-    public enum IconMessageType : uint
+    internal enum IconMessageType : uint
     {
         NIM_ADD = 0x00000000,
         NIM_MODIFY = 0x00000001,

@@ -6,14 +6,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
-using MyNotifyIcon.Interop;
-using Point = MyNotifyIcon.Interop.Point;
+using MyNotifyIcon;
+using Point = MyNotifyIcon.Point;
 
 namespace MyNotifyIcon
 {
-    public delegate void ClosingEventHandler();
-
-    public delegate void ClickTextEventHandler();
+    public delegate void ClosingBalloonEventHandler();
 
     public class WPFNotifyIcon : FrameworkElement
     {
@@ -39,58 +37,32 @@ namespace MyNotifyIcon
 
         public int PopupCount { get { return _popups.Count; } }
 
-        public WPFNotifyIcon(Action<MouseEvent> mouseEventHandler)
+        public WPFNotifyIcon(Icon startIcon, Icon notifyIcon, Action<MouseEvent> mouseEventHandler)
         {
             _msgSink = new MessageSink();
             _msgSink.MouseEventReceived += mouseEventHandler;
 
             _timeOut = TIMEOUT;
-
-            _startIcon = new Icon(@"Icons\emotion-7.ico");
-            _notifyIcon = new Icon(@"Icons\emotion-14.ico");
-
-            if (ContextMenu == null)
-                ContextMenu = new ContextMenu();
-
-            var mi = new MenuItem { Header = "Exit" };
-            mi.Click += MiOnClick;
-
-            ContextMenu.Items.Add(mi);
+            
+            _startIcon = startIcon;
+            _notifyIcon = notifyIcon;
         }
 
-        private void MiOnClick(object sender, RoutedEventArgs e)
+        public void ShowBalloon(UserControl customBalloon)
         {
-            DeleteIcon();
-
-            if (IconRemoved != null)
-                IconRemoved(this);
-        }
-
-        public void ShowBalloon(UserControl balloonContent)
-        {
-            var popup = new MyPopup(_timeOut, balloonContent);
+            var popup = new MyPopup(_timeOut, customBalloon);
             popup.IsActivated += PopupOnIsActivated;
             popup.IsClosed += PopupOnIsClosed;
 
             Position pos;
             lock (this)
             {
-                InitializePositionQueue(balloonContent.ActualWidth, balloonContent.ActualHeight);
+                InitializePositionQueue(customBalloon.Width, customBalloon.Height);
                 pos = _queue.ObtainPosition(popup.Id);
                 _popups.Add(popup);
             }
 
             popup.Show(pos);
-        }
-
-        private void InitializePositionQueue(double offsetX, double offsetY)
-        {
-            if (_queue != null)
-                return;
-
-            var x = SystemParameters.PrimaryScreenWidth - offsetX;
-            var y = SystemParameters.PrimaryScreenHeight - offsetY;
-            _queue = new PositionQueue(x, y, y);
         }
 
         public void ShowContextMenu(Point position)
@@ -104,21 +76,36 @@ namespace MyNotifyIcon
             Win32Api.SetForegroundWindow(_msgSink.MsgWinHandle);
         }
 
-        private void PopupOnIsClosed(object sender, RoutedEventArgs routedEventArgs)
+        public void ShowContextMenu(int x, int y)
         {
-            var popup = sender as MyPopup;
-            lock (this)
+            var pos = new Point { X = x, Y = y };
+            ShowContextMenu(pos);
+        }
+
+        public void ClearAllPopups()
+        {
+            while (_popups.Count > 0)
             {
-                _queue.ReleasePosition(popup.Id);
-                _popups.Remove(popup);
+                _popups[0].Close();
             }
         }
 
-        private void PopupOnIsActivated(object sender, RoutedEventArgs routedEventArgs)
+        public WPFNotifyIcon AddContextMenuItem(MenuItem menuItem)
         {
+            if (ContextMenu == null)
+                ContextMenu = new ContextMenu();
+
+            if (ContextMenu.Items.Contains(menuItem))
+                return this;
+
+            ContextMenu.Items.Add(menuItem);
+
+            return this;
         }
 
         public event Action<object> IconRemoved;
+
+        public event Action<object> IconAdded;
 
         public void AddIcon()
         {
@@ -145,6 +132,9 @@ namespace MyNotifyIcon
         public void DeleteIcon()
         {
             Win32Api.Shell_NotifyIcon(IconMessageType.NIM_DELETE, ref _iconData);
+
+            if (IconRemoved != null)
+                IconRemoved(this);
         }
 
         public void ModifyIcon()
@@ -190,6 +180,30 @@ namespace MyNotifyIcon
             }
 
             Win32Api.Shell_NotifyIcon(IconMessageType.NIM_MODIFY, ref _iconData);
+        }
+
+        private void InitializePositionQueue(double offsetX, double offsetY)
+        {
+            if (_queue != null)
+                return;
+
+            var x = SystemParameters.PrimaryScreenWidth - offsetX;
+            var y = SystemParameters.PrimaryScreenHeight - offsetY;
+            _queue = new PositionQueue(x, y, offsetY);
+        }
+
+        private void PopupOnIsClosed(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var popup = sender as MyPopup;
+            lock (this)
+            {
+                _queue.ReleasePosition(popup.Id);
+                _popups.Remove(popup);
+            }
+        }
+
+        private void PopupOnIsActivated(object sender, RoutedEventArgs routedEventArgs)
+        {
         }
 
         #region ParentTaskbarIcon
@@ -252,12 +266,6 @@ namespace MyNotifyIcon
 
         #endregion
 
-        public void ClearAllPopups()
-        {
-            while (_popups.Count > 0)
-            {
-                _popups[0].Close();
-            }
-        }
+
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MyNotifyIcon
 {
-    public class PositionQueue
+    internal class PositionQueue
     {
         private readonly double _origX;
         private readonly double _origY;

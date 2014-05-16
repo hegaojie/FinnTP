@@ -3,7 +3,7 @@ using FinnTorget;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace FinnTorgetUnitTests
+namespace MyNotifyIconUnitTests
 {
     [TestFixture]
     public class FinnConfigManagerTests

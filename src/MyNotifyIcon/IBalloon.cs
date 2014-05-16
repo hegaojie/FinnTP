@@ -2,6 +2,6 @@
 {
     public interface IBalloon
     {
-        event ClosingEventHandler Closing;
+        event ClosingBalloonEventHandler Closing;
     }
 }

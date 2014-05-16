@@ -5,7 +5,7 @@ using System.Windows.Threading;
 
 namespace MyNotifyIcon
 {
-    public class MyPopup : Popup
+    internal class MyPopup : Popup
     {
         private readonly DispatcherTimer _timer;
 

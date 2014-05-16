@@ -1,9 +1,8 @@
 ﻿using System;
-using MyNotifyIcon.Interop;
 
 namespace MyNotifyIcon
 {
-    public class MessageSink : IDisposable
+    internal class MessageSink : IDisposable
     {
         private WindowProcedureHandler _msgHandler;
 
@@ -57,7 +56,7 @@ namespace MyNotifyIcon
                     break;
 
                 case MessageType.MOUSE_LBUTTON_PRESS:
-                    //TODO: show balloon tip
+                    //TODO: show customBalloon tip
                     MouseEventReceived(MouseEvent.LeftMouseDown);
                     break;
 

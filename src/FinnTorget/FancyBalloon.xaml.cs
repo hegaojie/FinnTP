@@ -31,7 +31,7 @@ namespace FinnTorget
             
         }
 
-        public event ClosingEventHandler Closing;
+        public event ClosingBalloonEventHandler Closing;
 
         #region BalloonText dependency property
 
@@ -62,7 +62,7 @@ namespace FinnTorget
 
     public interface IBalloon
     {
-        event ClosingEventHandler Closing;
+        event ClosingBalloonEventHandler Closing;
     }
     
 }

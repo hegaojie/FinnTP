@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -10,11 +11,11 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 using FinnTorget.Annotations;
 using MyNotifyIcon;
-using MyNotifyIcon.Interop;
-using Point = MyNotifyIcon.Interop.Point;
+using Point = MyNotifyIcon.Point;
 
 namespace FinnTorget
 {
@@ -137,6 +138,25 @@ namespace FinnTorget
             }
         }
 
+        private void InitializeWPFNotifyIcon()
+        {
+            var startIcon = new Icon(@"Icons\emotion-7.ico");
+            var notifyIcon = new Icon(@"Icons\emotion-14.ico");
+
+            _notifyIcon = new WPFNotifyIcon(startIcon, notifyIcon, MsgSinkOnMouseEventReceived);
+
+            var miExit = new MenuItem { Header = "Exit" };
+            miExit.Click += MiExitOnClick;
+
+            var miHelp = new MenuItem { Header = "Help" };
+            miHelp.Click += MiSayHelloOnClick;
+
+            _notifyIcon.AddContextMenuItem(miHelp)
+                       .AddContextMenuItem(miExit);
+
+            _notifyIcon.IconRemoved += NotifyIconOnIconRemoved;
+        }
+
         #region CallBack
 
         private void NotifyIconOnIconRemoved(object obj)
@@ -250,11 +270,21 @@ namespace FinnTorget
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            _notifyIcon = new WPFNotifyIcon(MsgSinkOnMouseEventReceived);
-            _notifyIcon.IconRemoved += NotifyIconOnIconRemoved;
+            InitializeWPFNotifyIcon();
+
             _notifyIcon.AddIcon();
 
             HideAndDeactivate();
+        }
+
+        private void MiSayHelloOnClick(object sender, RoutedEventArgs routedEventArgs)
+        {
+            MessageBox.Show("Help is still under development!");
+        }
+
+        private void MiExitOnClick(object sender, RoutedEventArgs routedEventArgs)
+        {
+            _notifyIcon.DeleteIcon();
         }
 
         #endregion

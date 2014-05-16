@@ -2,7 +2,7 @@
 using MyNotifyIcon;
 using NUnit.Framework;
 
-namespace FinnTorgetUnitTests
+namespace MyNotifyIconUnitTests
 {
     [TestFixture]
     public class PositionQueueTests
@@ -10,7 +10,7 @@ namespace FinnTorgetUnitTests
         protected const double _origX = 64;
         protected const double _origY = 1200;
         protected const double _offsetY = 120;
-        protected PositionQueue _queue;
+        private PositionQueue _queue;
 
         [SetUp]
         public void Arrange()
@@ -21,7 +21,7 @@ namespace FinnTorgetUnitTests
         [TestFixture]
         public class Given_empty_position_queue : PositionQueueTests
         {
-            protected Position _pos;
+            private Position _pos;
 
             [SetUp]
             public void Arrange()
@@ -147,7 +147,7 @@ namespace FinnTorgetUnitTests
         [TestFixture]
         public class Given_3_occupied_positions_in_queue : PositionQueueTests
         {
-            protected Position _pos;
+            private Position _pos;
 
             [SetUp]
             public void Arange()
@@ -259,7 +259,7 @@ namespace FinnTorgetUnitTests
         [TestFixture]
         public class Given_3_positions_and_second_not_occupied : PositionQueueTests
         {
-            protected Position _pos;
+            private Position _pos;
 
             [SetUp]
             public void Arrange()

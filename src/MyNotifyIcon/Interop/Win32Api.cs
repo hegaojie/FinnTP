@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using MyNotifyIcon.Interop;
 
 namespace MyNotifyIcon
 {
-    public class Win32Api
+    internal class Win32Api
     {
         [DllImport("shell32.dll", EntryPoint = "Shell_NotifyIcon")]
         public static extern bool Shell_NotifyIcon(IconMessageType dwMessage, [In] ref NotifyIconData lpdata);
@@ -36,10 +35,6 @@ namespace MyNotifyIcon
         [DllImport("USER32.DLL", SetLastError = true)]
         public static extern bool DestroyWindow(IntPtr hWnd);
 
-
-        [DllImport("User32.dll", SetLastError = true)]
-        public static extern bool GetCursorPos(ref Point lpPoint);
-
         [DllImport("USER32.DLL")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
     }
@@ -48,5 +43,5 @@ namespace MyNotifyIcon
     /// Callback delegate which is used by the Windows API to
     /// submit window messages.
     /// </summary>
-    public delegate long WindowProcedureHandler(IntPtr hwnd, uint uMsg, uint wparam, uint lparam);
+    internal delegate long WindowProcedureHandler(IntPtr hwnd, uint uMsg, uint wparam, uint lparam);
 }

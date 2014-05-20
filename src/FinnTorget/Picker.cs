@@ -17,6 +17,8 @@ namespace FinnTorget
         
         private FinnConfig _config;
 
+        private readonly IList<TorgetItem> _items;
+
         public Picker(WebClient wc, FinnConfig config)
         {
             _wc = wc;
@@ -26,6 +28,48 @@ namespace FinnTorget
 
             _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromSeconds(_config.Interval) };
             _timer.Tick += RunScan;
+        }
+
+        public void RunTimer()
+        {
+            _timer.Start();
+        }
+
+        public void UpdateConfig(FinnConfig config)
+        {
+            _timer.Stop();
+            _timer.Interval = TimeSpan.FromSeconds(config.Interval);
+            _timer.Start();
+        }
+
+        protected virtual string DownloadString(string url)
+        {
+            return _wc.DownloadString(url);
+        }
+
+        private void RunScan(object sender, EventArgs eventArgs)
+        {
+            _items.Clear();
+
+            var startPage = 1;
+            FetchResult result;
+            DateTime? nextNotifyTimeStart = null;
+
+            do
+            {
+                result = FetchTorgetNew(startPage++);
+
+                if (result.NextNotifyTimeStart.HasValue)
+                {
+                    nextNotifyTimeStart = result.NextNotifyTimeStart;
+                }
+
+            } while (result.Continue);
+
+            if (nextNotifyTimeStart.HasValue)
+                _config.StartTime = nextNotifyTimeStart.Value;
+
+            RaiseScanCompleted();
         }
 
         private FetchResult FetchTorgetNew(int pageNo)
@@ -118,54 +162,8 @@ namespace FinnTorget
 
         private bool IsNew(DateTime dateTime)
         {
-
-
             var ret = DateTime.Compare(_config.StartTime, dateTime) <= 0;
             return ret;
-        }
-
-        public void RunTimer()
-        {
-            _timer.Start();
-        }
-
-        private void RunScan(object sender, EventArgs eventArgs)
-        {
-            _items.Clear();
-
-            var startPage = 1;
-            FetchResult result;
-            DateTime? nextNotifyTimeStart = null;
-
-            do
-            {
-                result = FetchTorgetNew(startPage++);
-
-                if (result.NextNotifyTimeStart.HasValue)
-                {
-                    nextNotifyTimeStart = result.NextNotifyTimeStart;
-                }
-
-            } while (result.Continue);
-
-            if (nextNotifyTimeStart.HasValue)
-                _config.StartTime = nextNotifyTimeStart.Value;
-
-            RaiseScanCompleted();
-        }
-
-        public void UpdateConfig(FinnConfig config)
-        {
-            _timer.Stop();
-            _timer.Interval = TimeSpan.FromSeconds(config.Interval);
-            _timer.Start();
-        }
-
-        private readonly IList<TorgetItem> _items;
-
-        protected virtual string DownloadString(string url)
-        {
-            return _wc.DownloadString(url);
         }
 
         #region Events

@@ -10,15 +10,20 @@ namespace MyNotifyIcon
 
         private PositionQueue _positionQueue;
         private readonly IList<Balloon> _balloons;
-        private readonly int _timeOut;
+        private int _timeOut;
 
         public BalloonPool(int timeOut)
         {
             _balloons = new List<Balloon>();
-            _timeOut = timeOut;
+            UpdateTimeOut(timeOut);
         }
 
         public int Count { get { return _balloons.Count; } }
+
+        public void UpdateTimeOut(int timeOut)
+        {
+            _timeOut = timeOut;
+        }
 
         public void ShowSingle(UserControl customBalloon)
         {

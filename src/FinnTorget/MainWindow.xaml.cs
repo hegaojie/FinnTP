@@ -36,8 +36,6 @@ namespace FinnTorget
 
         private bool _isActivated;
 
-        private const int TIMEOUT = 4000;
-
         #region Properties back fields
 
         private ObservableCollection<TorgetItem> _items;
@@ -93,6 +91,8 @@ namespace FinnTorget
             }
         }
 
+        public int BalloonTimeout { get; set; }
+
         #endregion
 
         public MainWindow()
@@ -111,7 +111,7 @@ namespace FinnTorget
 
             InitSettings(_config);
 
-            _balloonPool = new BalloonPool(TIMEOUT);
+            _balloonPool = new BalloonPool(_config.BalloonTimeOut);
 
             DataContext = this;
         }
@@ -134,6 +134,7 @@ namespace FinnTorget
             Url = config.Url;
             Interval = config.Interval;
             StartTime = config.StartTimeString;
+            BalloonTimeout = config.BalloonTimeOut;
         }
 
         private void PlayNotifySound()
@@ -256,8 +257,11 @@ namespace FinnTorget
             _config.Url = Url;
             _config.StartTime = _config.FromDateTimeString(StartTime);
             _config.Interval = Convert.ToDouble(Interval);
+            _config.BalloonTimeOut = Convert.ToInt32(BalloonTimeout);
 
             _picker.UpdateConfig(_config);
+
+            _balloonPool.UpdateTimeOut(_config.BalloonTimeOut);
 
             MessageBox.Show(this, "New settings are applied!");
         }

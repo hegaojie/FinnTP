@@ -6,7 +6,7 @@ namespace FinnTorget
 {
     public class FinnConfigManager : IConfigManager
     {
-        public const int DEFAULT_TIMEOUT_MILLISECONDS = 4000;
+        public const int DEFAULT_TIMEOUT_SECONDS = 5;
 
         public const double DEFAULT_INTERVAL = 30.0;
         
@@ -68,7 +68,7 @@ namespace FinnTorget
                     config.Url = !String.IsNullOrEmpty(line) ? line : DEFAULT_URL;
 
                     line = reader.ReadLine();
-                    config.BalloonTimeOut = !String.IsNullOrEmpty(line) ? Convert.ToInt32(line) : DEFAULT_TIMEOUT_MILLISECONDS;
+                    config.BalloonTimeOut = !String.IsNullOrEmpty(line) ? Convert.ToInt32(line) : DEFAULT_TIMEOUT_SECONDS;
                 }
             }
             catch (Exception exc)
@@ -105,7 +105,7 @@ namespace FinnTorget
                     StartTime = ParseDateTime(DateTime.Now.ToString(_cultrueInfo)),
                     Interval = _interval,
                     Url = DEFAULT_URL,
-                    BalloonTimeOut = DEFAULT_TIMEOUT_MILLISECONDS
+                    BalloonTimeOut = DEFAULT_TIMEOUT_SECONDS
                 };
             return config;
         }

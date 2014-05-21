@@ -19,7 +19,7 @@ namespace MyNotifyIcon
 
             Id = Guid.NewGuid().ToString();
 
-            _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromDays(1) };
+            _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromSeconds(timeout) };
             _timer.Tick += TimerOnTick;
             _timer.Start();
         }

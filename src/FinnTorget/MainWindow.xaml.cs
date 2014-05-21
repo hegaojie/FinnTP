@@ -26,6 +26,8 @@ namespace FinnTorget
     {
         private WPFNotifyIcon _notifyIcon;
 
+        private BalloonPool _balloonPool;
+
         private readonly FinnConfig _config;
 
         private readonly IConfigManager _cfgManager;
@@ -33,6 +35,8 @@ namespace FinnTorget
         private readonly Picker _picker;
 
         private bool _isActivated;
+
+        private const int TIMEOUT = 4000;
 
         #region Properties back fields
 
@@ -107,6 +111,8 @@ namespace FinnTorget
 
             InitSettings(_config);
 
+            _balloonPool = new BalloonPool(TIMEOUT);
+
             DataContext = this;
         }
 
@@ -177,10 +183,10 @@ namespace FinnTorget
                     _items.Add(torgetItem);
                     newTorgetAdded = true;
 
-                    if (_notifyIcon.PopupCount < WPFNotifyIcon.MAX_POPUPS)
+                    if (_balloonPool.Count < BalloonPool.MAXIMUM_COUNT)
                     {
                         var fb = new FancyBalloon { BalloonText = torgetItem.Text };
-                        _notifyIcon.ShowBalloon(fb);
+                        _balloonPool.ShowSingle(fb);
                         PlayNotifySound();
                     }
                 }
@@ -242,7 +248,7 @@ namespace FinnTorget
             _items.Clear();
             OnPropertyChanged("Items");
             _notifyIcon.RestoreIcon();
-            _notifyIcon.ClearAllPopups();
+            _balloonPool.Clear();
         }
 
         private void BtnApply_OnClick(object sender, RoutedEventArgs e)

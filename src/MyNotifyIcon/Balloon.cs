@@ -5,13 +5,13 @@ using System.Windows.Threading;
 
 namespace MyNotifyIcon
 {
-    internal class MyPopup : Popup
+    internal class Balloon : Popup
     {
         private readonly DispatcherTimer _timer;
 
         public string Id { get; private set; }
 
-        public MyPopup(int timeout, UIElement balloon)
+        public Balloon(int timeout, UIElement balloon)
         {
             Child = balloon;
 
@@ -22,25 +22,6 @@ namespace MyNotifyIcon
             _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromDays(1) };
             _timer.Tick += TimerOnTick;
             _timer.Start();
-        }
-
-        private void TimerOnTick(object sender, EventArgs eventArgs)
-        {
-            Close();
-        }
-
-        private void SubscribeCloseEvent()
-        {
-            var fb = Child as IBalloon;
-            if (fb != null)
-                fb.Closing += Close;
-        }
-
-        private void UnsubscribeCloseEvent()
-        {
-            var fb = Child as IBalloon;
-            if (fb != null)
-                fb.Closing -= Close;
         }
 
         public void Close()
@@ -82,13 +63,32 @@ namespace MyNotifyIcon
                 IsOpen = true;
                 StaysOpen = true;
             }
-
+            
             RaiseIsActivatedEvent();
         }
 
         public event RoutedEventHandler IsActivated;
 
         public event RoutedEventHandler IsClosed;
+
+        private void TimerOnTick(object sender, EventArgs eventArgs)
+        {
+            Close();
+        }
+
+        private void SubscribeCloseEvent()
+        {
+            var fb = Child as IBalloon;
+            if (fb != null)
+                fb.Closing += Close;
+        }
+
+        private void UnsubscribeCloseEvent()
+        {
+            var fb = Child as IBalloon;
+            if (fb != null)
+                fb.Closing -= Close;
+        }
 
         private void RaiseIsClosedEvent()
         {

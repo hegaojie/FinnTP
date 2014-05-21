@@ -44,11 +44,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BalloonPool.cs" />
     <Compile Include="IBalloon.cs" />
     <Compile Include="Interop\DataMarshalling.cs" />
     <Compile Include="MessageSink.cs" />
     <Compile Include="WPFNotifyIcon.cs" />
-    <Compile Include="MyPopup.cs" />
+    <Compile Include="Balloon.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,6 +6,8 @@ namespace FinnTorget
 {
     public class FinnConfigManager : IConfigManager
     {
+        public const int DEFAULT_TIMEOUT_MILLISECONDS = 4000;
+
         public const double DEFAULT_INTERVAL = 30.0;
         
         public const string DEFAULT_CONFIG_FILE = @"lastNotifyTime.txt";
@@ -60,11 +62,13 @@ namespace FinnTorget
                         config.StartTime = ParseDateTime(line);
 
                     line = reader.ReadLine();
-                    if (!String.IsNullOrEmpty(line))
-                        config.Interval = Convert.ToDouble(line);
+                    config.Interval = !String.IsNullOrEmpty(line) ? Convert.ToDouble(line) : DEFAULT_INTERVAL;
 
                     line = reader.ReadLine();
                     config.Url = !String.IsNullOrEmpty(line) ? line : DEFAULT_URL;
+
+                    line = reader.ReadLine();
+                    config.BalloonTimeOut = !String.IsNullOrEmpty(line) ? Convert.ToInt32(line) : DEFAULT_TIMEOUT_MILLISECONDS;
                 }
             }
             catch (Exception exc)
@@ -85,6 +89,7 @@ namespace FinnTorget
                     writer.WriteLine(str);
                     writer.WriteLine(config.Interval.ToString(CultureInfo.InvariantCulture));
                     writer.WriteLine(config.Url);
+                    writer.WriteLine(config.BalloonTimeOut.ToString(CultureInfo.InvariantCulture));
                 }
             }
             catch (Exception exc)
@@ -99,7 +104,8 @@ namespace FinnTorget
                 {
                     StartTime = ParseDateTime(DateTime.Now.ToString(_cultrueInfo)),
                     Interval = _interval,
-                    Url = DEFAULT_URL
+                    Url = DEFAULT_URL,
+                    BalloonTimeOut = DEFAULT_TIMEOUT_MILLISECONDS
                 };
             return config;
         }

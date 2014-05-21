@@ -23,6 +23,8 @@ namespace FinnTorget
 
         public double Interval { get; set; }
 
+        public int BalloonTimeOut { get; set; }
+
         private readonly CultureInfo _cultureInfo = new CultureInfo("nb-NO");
 
         public DateTime FromDateTimeString(string dateTime)

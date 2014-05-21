@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -15,54 +14,21 @@ namespace MyNotifyIcon
 
     public class WPFNotifyIcon : FrameworkElement
     {
-        private const int TIMEOUT = 4000;
-        public const int MAX_POPUPS = 6;
         private const int BLINK_INVERVAL_MILLISECONDS = 500;
 
-        private NotifyIconData _iconData;
-
         private readonly MessageSink _msgSink;
-
-        private readonly int _timeOut;
-
-        private readonly IList<MyPopup> _popups = new List<MyPopup>();
-
-        private PositionQueue _queue;
-
         private readonly Icon _startIcon;
-
         private readonly Icon _notifyIcon;
-
         private DispatcherTimer _timer;
-
-        public int PopupCount { get { return _popups.Count; } }
+        private NotifyIconData _iconData;
 
         public WPFNotifyIcon(Icon startIcon, Icon notifyIcon, Action<MouseEvent> mouseEventHandler)
         {
             _msgSink = new MessageSink();
             _msgSink.MouseEventReceived += mouseEventHandler;
-
-            _timeOut = TIMEOUT;
             
             _startIcon = startIcon;
             _notifyIcon = notifyIcon;
-        }
-
-        public void ShowBalloon(UserControl customBalloon)
-        {
-            var popup = new MyPopup(_timeOut, customBalloon);
-            popup.IsActivated += PopupOnIsActivated;
-            popup.IsClosed += PopupOnIsClosed;
-
-            Position pos;
-            lock (this)
-            {
-                InitializePositionQueue(customBalloon.Width, customBalloon.Height);
-                pos = _queue.ObtainPosition(popup.Id);
-                _popups.Add(popup);
-            }
-
-            popup.Show(pos);
         }
 
         public void ShowContextMenu(Point position)
@@ -78,16 +44,7 @@ namespace MyNotifyIcon
 
         public void ShowContextMenu(int x, int y)
         {
-            var pos = new Point { X = x, Y = y };
-            ShowContextMenu(pos);
-        }
-
-        public void ClearAllPopups()
-        {
-            while (_popups.Count > 0)
-            {
-                _popups[0].Close();
-            }
+            ShowContextMenu(new Point { X = x, Y = y });
         }
 
         public WPFNotifyIcon AddContextMenuItem(MenuItem menuItem)
@@ -127,6 +84,9 @@ namespace MyNotifyIcon
             _iconData.szInfo = "";
 
             Win32Api.Shell_NotifyIcon(IconMessageType.NIM_ADD, ref _iconData);
+
+            if (IconAdded != null)
+                IconAdded(this);
         }
 
         public void DeleteIcon()
@@ -180,30 +140,6 @@ namespace MyNotifyIcon
             }
 
             Win32Api.Shell_NotifyIcon(IconMessageType.NIM_MODIFY, ref _iconData);
-        }
-
-        private void InitializePositionQueue(double offsetX, double offsetY)
-        {
-            if (_queue != null)
-                return;
-
-            var x = SystemParameters.PrimaryScreenWidth - offsetX;
-            var y = SystemParameters.PrimaryScreenHeight - offsetY;
-            _queue = new PositionQueue(x, y, offsetY);
-        }
-
-        private void PopupOnIsClosed(object sender, RoutedEventArgs routedEventArgs)
-        {
-            var popup = sender as MyPopup;
-            lock (this)
-            {
-                _queue.ReleasePosition(popup.Id);
-                _popups.Remove(popup);
-            }
-        }
-
-        private void PopupOnIsActivated(object sender, RoutedEventArgs routedEventArgs)
-        {
         }
 
         #region ParentTaskbarIcon
@@ -265,7 +201,5 @@ namespace MyNotifyIcon
         }
 
         #endregion
-
-
     }
 }

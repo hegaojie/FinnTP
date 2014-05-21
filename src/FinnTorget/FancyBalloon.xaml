@@ -70,7 +70,7 @@
             </Border.Background>
         </Border>
         <Image HorizontalAlignment="Left" VerticalAlignment="Top" Width="32" Height="32" Source="/Imges\promotion_new.png" Stretch="Fill" Margin="12" />
-        <Image HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="16" Height="16" Source="/Imges\Close.png" Stretch="Fill" Opacity="0.4" ToolTip="Close Balloon" x:Name="imgClose" MouseDown="imgClose_MouseDown"/>
+        <Image HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="16" Height="16" Source="/Imges\Close.png" Stretch="Fill" Opacity="0.4" ToolTip="Close BalloonPool" x:Name="imgClose" MouseDown="imgClose_MouseDown"/>
         <TextBlock x:Name="tbStuffName" HorizontalAlignment="Center"  VerticalAlignment="Bottom"  Width="220" Height="75" Padding="0 10 0 0" Text="{Binding Path=BalloonText}" Foreground="#FFECAD25" FontSize="16" FontWeight="Bold" TextAlignment="Center" MouseDown="TbStuffName_OnMouseDown" />
         
         <!--<TextBlock Margin="72,49.2,10,0" VerticalAlignment="Top" Foreground="#FFECAD25" TextWrapping="Wrap">

@@ -35,7 +35,7 @@ namespace MyNotifyIcon
             lock (this)
             {
                 InitializePositionQueue(customBalloon.Width, customBalloon.Height);
-                pos = _positionQueue.ObtainPosition(balloon.Id);
+                pos = _positionQueue.OccupyPosition(balloon.Id);
                 _balloons.Add(balloon);
             }
 
@@ -55,7 +55,13 @@ namespace MyNotifyIcon
             if (_positionQueue != null)
                 return;
 
-            _positionQueue = new PositionQueue(SystemParameters.PrimaryScreenWidth - offsetX, SystemParameters.PrimaryScreenHeight - offsetY, offsetY);
+            var origin = new Point()
+                {
+                    X = (int)(SystemParameters.PrimaryScreenWidth - offsetX),
+                    Y = (int)(SystemParameters.PrimaryScreenHeight - offsetY)
+                };
+
+            _positionQueue = new PositionQueue(origin, offsetY);
         }
 
         private void BalloonOnIsClosed(object sender, RoutedEventArgs routedEventArgs)
@@ -63,7 +69,7 @@ namespace MyNotifyIcon
             var balloon = sender as Balloon;
             lock (this)
             {
-                _positionQueue.ReleasePosition(balloon.Id);
+                _positionQueue.ReleasePositionAndClearPositionsIfAllAreFree(balloon.Id);
                 _balloons.Remove(balloon);
             }
         }

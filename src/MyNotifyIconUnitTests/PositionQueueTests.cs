@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MyNotifyIcon;
 using NUnit.Framework;
 
@@ -15,7 +16,7 @@ namespace MyNotifyIconUnitTests
         [SetUp]
         public void Arrange()
         {
-            _queue = new PositionQueue(_origX, _origY, _offsetY);
+            _queue = new PositionQueue(new Point() { X = (int)_origX, Y = (int)_origY }, _offsetY);
         }
 
         [TestFixture]
@@ -34,7 +35,7 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _queue.ReleasePosition("");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("");
                 }
 
                 [Test]
@@ -50,7 +51,7 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _pos = _queue.ObtainPosition("1");
+                    _pos = _queue.OccupyPosition("1");
                 }
 
                 [Test]
@@ -90,8 +91,8 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _pos = _queue.ObtainPosition("1");
-                    _pos = _queue.ObtainPosition("2");
+                    _pos = _queue.OccupyPosition("1");
+                    _pos = _queue.OccupyPosition("2");
                 }
 
                 [Test]
@@ -131,9 +132,9 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _pos = _queue.ObtainPosition("1");
-                    _pos = _queue.ObtainPosition("2");
-                    _pos = _queue.ObtainPosition("3");
+                    _pos = _queue.OccupyPosition("1");
+                    _pos = _queue.OccupyPosition("2");
+                    _pos = _queue.OccupyPosition("3");
                 }
 
                 [Test]
@@ -163,7 +164,7 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _queue.ReleasePosition("1");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("1");
                 }
 
                 [Test]
@@ -189,7 +190,7 @@ namespace MyNotifyIconUnitTests
                 {
                     Assert.IsTrue(_queue.Positions[1].IsOccupied);
                 }
-                
+
                 [Test]
                 public void third_position_occupied()
                 {
@@ -203,7 +204,7 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _queue.ReleasePosition("2");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("2");
                 }
 
                 [Test]
@@ -243,9 +244,9 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _queue.ReleasePosition("1");
-                    _queue.ReleasePosition("2");
-                    _queue.ReleasePosition("3");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("1");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("2");
+                    _queue.ReleasePositionAndClearPositionsIfAllAreFree("3");
                 }
 
                 [Test]
@@ -275,7 +276,7 @@ namespace MyNotifyIconUnitTests
                 [SetUp]
                 public void Act()
                 {
-                    _pos = _queue.ObtainPosition("999");
+                    _pos = _queue.OccupyPosition("999");
                 }
 
                 [Test]

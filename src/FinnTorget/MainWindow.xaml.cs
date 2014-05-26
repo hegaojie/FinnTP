@@ -105,9 +105,9 @@ namespace FinnTorget
 
             _config = _cfgManager.LoadConfiguration();
 
-            _picker = new Picker(new WebClient { Encoding = Encoding.UTF8 }, _config);
+            _picker = new Picker(new WebClient { Encoding = Encoding.UTF8 }, new FinnHtmlParser());
             _picker.ScanCompeleted += PickerOnScanCompeleted;
-            _picker.Start();
+            _picker.Run(_config);
 
             InitSettings(_config);
 
@@ -172,7 +172,7 @@ namespace FinnTorget
             Application.Current.Shutdown();
         }
 
-        private void PickerOnScanCompeleted(IEnumerable<TorgetItem> torgets)
+        private void PickerOnScanCompeleted(IEnumerable<TorgetItem> torgets, DateTime newStartTime)
         {
             if (torgets == null) return;
 
@@ -197,7 +197,14 @@ namespace FinnTorget
             {
                 OnPropertyChanged("Items");
                 _notifyIcon.BlinkIcon();
+                UpdateStartTime(newStartTime);
             }
+        }
+
+        private void UpdateStartTime(DateTime newStartTime)
+        {
+            if (_config.IsStartTimeEarlierThan(newStartTime))
+                _config.StartTime = newStartTime;
         }
 
         private void MsgSinkOnMouseEventReceived(MouseEvent mouseEvent)
@@ -259,7 +266,7 @@ namespace FinnTorget
             _config.Interval = Convert.ToDouble(Interval);
             _config.BalloonTimeOut = Convert.ToInt32(BalloonTimeout);
 
-            _picker.Restart(_config);
+            _picker.Run(_config);
 
             _balloonPool.UpdateTimeOut(_config.BalloonTimeOut);
 

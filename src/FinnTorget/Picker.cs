@@ -10,47 +10,62 @@ namespace FinnTorget
 {
     public class Picker
     {
-        private WebClient _wc;
+        private readonly WebClient _wc;
+        private readonly FinnHtmlParser _finnHtmlParser;
         private DispatcherTimer _timer;
+
         private FinnConfig _config;
         private readonly IList<TorgetItem> _items;
-        private HtmlDocument _htmlDoc;
 
-        public Picker(WebClient wc, FinnConfig config)
+        public Picker(WebClient wc, FinnHtmlParser htmlParser)
         {
             _wc = wc;
-            _config = config;
-            _htmlDoc = new HtmlDocument { OptionFixNestedTags = true, OptionAutoCloseOnEnd = true };
-
+            _finnHtmlParser = htmlParser;
             _items = new List<TorgetItem>();
-
-            _timer = new DispatcherTimer(DispatcherPriority.SystemIdle) { Interval = TimeSpan.FromSeconds(_config.Interval) };
-            _timer.Tick += RunScan;
         }
 
-        public void Start()
+        public void Run(FinnConfig config)
         {
-            _timer.Start();
+            _config = config;
+            Restart();
         }
 
-        public void Restart(FinnConfig config)
+        private DispatcherTimer Timer
         {
-            _timer.Stop();
-            _timer.Interval = TimeSpan.FromSeconds(config.Interval);
-            _timer.Start();
-        }
-
-        protected virtual string DownloadString(string url)
-        {
-            return _wc.DownloadString(url);
+            get
+            {
+                if (_timer == null)
+                {
+                    _timer = new DispatcherTimer(DispatcherPriority.SystemIdle);
+                    _timer.Tick += RunScan;
+                }
+                return _timer;
+            }
         }
 
         private void RunScan(object sender, EventArgs eventArgs)
         {
             RemoveAllTorgetItems();
             ScanFinnTorgetPages();
-            UpdateStartTimeForConfig();
             RaiseScanCompleted();
+        }
+
+        private void Restart()
+        {
+            StopTimer();
+            StartTimer();
+        }
+
+        private void StartTimer()
+        {
+            Timer.Interval = TimeSpan.FromSeconds(_config.Interval);
+            Timer.Start();
+        }
+
+        private void StopTimer()
+        {
+            if (Timer.IsEnabled)
+                Timer.Stop();
         }
 
         private void RemoveAllTorgetItems()
@@ -58,11 +73,26 @@ namespace FinnTorget
             _items.Clear();
         }
 
-        private void UpdateStartTimeForConfig()
+        private void ScanFinnTorgetPages()
         {
-            var latestStartTime = GetLatestDateTime();
-            if (IsLaterThanConfigStartTime(latestStartTime))
-                _config.StartTime = latestStartTime;
+            try
+            {
+                bool hasMoreToFetch;
+                var startPage = 1;
+                do
+                {
+                    hasMoreToFetch = FetchNewTorgetItemFromPage(startPage++);
+                } while (hasMoreToFetch);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message);
+            }
+        }
+
+        private string DownloadString(string url)
+        {
+            return _wc.DownloadString(url);
         }
 
         private DateTime GetLatestDateTime()
@@ -71,86 +101,44 @@ namespace FinnTorget
             return dateTime;
         }
 
-        private void ScanFinnTorgetPages()
-        {
-            try
-            {
-                FetchResult result;
-                var startPage = 1;
-                do
-                {
-                    result = FetchNewTorgetItemFromPage(startPage++);
-                } while (result.Continue);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message);
-            }
-        }
-
-        private FetchResult FetchNewTorgetItemFromPage(int pageNo)
+        private bool FetchNewTorgetItemFromPage(int pageNo)
         {
             var items = GetAllTorgetNodesOnPage(pageNo);
-            return items != null ? AddNewTorgetItems(items) : new FetchResult { Continue = false };
+            return items != null && AddNewTorgetItems(items);
         }
 
-        private FetchResult AddNewTorgetItems(IEnumerable<HtmlNode> items)
+        private bool AddNewTorgetItems(IEnumerable<HtmlNode> items)
         {
             foreach (var torgetItem in items.Where(IsNewTorgetItem).Select(CreateTorgetItem))
                 _items.Add(torgetItem);
 
-            return new FetchResult{Continue = items.All(IsNewTorgetItem)};
+            return items.All(IsNewTorgetItem);
         }
 
         private bool IsNewTorgetItem(HtmlNode item)
         {
-            return IsLaterThanConfigStartTime(GetPublishTime(item));
+            return _config.IsStartTimeEarlierThan(GetPublishTime(item));
         }
 
         private TorgetItem CreateTorgetItem(HtmlNode item)
         {
-            var imageNode = GetImageNode(item);
+            var imageNode = _finnHtmlParser.GetImageNode(item);
 
             var torgetItem = new TorgetItem
                 {
-                    ID = GetItemId(item),
-                    Text = GetImageDescription(imageNode),
-                    ImageURL = GetImageUrl(imageNode),
-                    URL = GetDetailsUrl(item),
+                    ID = _finnHtmlParser.GetItemId(item),
+                    Text = _finnHtmlParser.GetImageDescription(imageNode),
+                    ImageURL = _finnHtmlParser.GetImageUrl(imageNode),
+                    URL = _finnHtmlParser.GetDetailsUrl(item),
                     PublishTime = GetPublishTime(item)
                 };
 
             return torgetItem;
         }
 
-        private string GetItemId(HtmlNode item)
-        {
-            return item.Attributes["id"].Value;
-        }
-
-        private string GetImageDescription(HtmlNode imageNode)
-        {
-            return imageNode.Attributes["alt"].Value;
-        }
-
-        private string GetImageUrl(HtmlNode imageNode)
-        {
-            return imageNode.Attributes["src"].Value;
-        }
-
-        private string GetDetailsUrl(HtmlNode item)
-        {
-            return "www.finn.no/finn/torget/" + item.SelectSingleNode(".//div[@class='photoframe']/a").Attributes["href"].Value;
-        }
-
-        private HtmlNode GetImageNode(HtmlNode item)
-        {
-            return item.SelectSingleNode(".//img");
-        }
-
         private DateTime GetPublishTime(HtmlNode item)
         {
-            var publishTime = item.SelectSingleNode(".//dd[@data-automation-id='dateinfo']").InnerText;
+            var publishTime = _finnHtmlParser.GetPublishTimeString(item);
             return _config.FromDateTimeString(publishTime);
         }
 
@@ -158,18 +146,12 @@ namespace FinnTorget
         {
             var url = GetUrl(pageNo);
             var html = DownloadString(url);
-            _htmlDoc.LoadHtml(html);
-            return _htmlDoc.DocumentNode.SelectNodes("//div[@class='man phl pbm ptl gridview r-object media']");
+            return _finnHtmlParser.ParseTorgetNodes(html);
         }
 
         private string GetUrl(int pageNo)
         {
             return _config.Url.Replace("&page=", "&page=" + pageNo);
-        }
-
-        private bool IsLaterThanConfigStartTime(DateTime dateTime)
-        {
-            return DateTime.Compare(_config.StartTime, dateTime) <= 0;
         }
 
         #region Events
@@ -179,12 +161,12 @@ namespace FinnTorget
         private void RaiseScanCompleted()
         {
             if (ScanCompeleted != null)
-                ScanCompeleted(_items);
+                ScanCompeleted(_items, GetLatestDateTime());
         }
 
         #endregion
     }
 
-    public delegate void ScanCompletedHandler(IEnumerable<TorgetItem> torgets);
+    public delegate void ScanCompletedHandler(IEnumerable<TorgetItem> torgets, DateTime newStartTime);
 
 }

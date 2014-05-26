@@ -34,5 +34,10 @@ namespace FinnTorget
             DateTime dt;
             return DateTime.TryParse(dateTime, _cultureInfo, DateTimeStyles.None, out dt) ? dt : DateTime.Now;
         }
+
+        public bool IsStartTimeEarlierThan(DateTime newStartTime)
+        {
+            return DateTime.Compare(StartTime, newStartTime) <= 0;
+        }
     }
 }

@@ -74,7 +74,7 @@
                     <Label Content="Url:" Grid.Row="0" Grid.Column="0"/>
                     <TextBox x:Name="TbUrl" Grid.Row="0" Grid.Column="1" Height="26" Text="{Binding Path=Url}" Grid.ColumnSpan="2" />
                         
-                    <Label Content="Start Check Time:" Grid.Row="1" Grid.Column="0"/>
+                    <Label Content="Run Check Time:" Grid.Row="1" Grid.Column="0"/>
                     <TextBox x:Name="TbStartTime" Grid.Row="1" Grid.Column="1" Height="26" Text="{Binding Path=StartTime}" />
                     <Label Grid.Column="2" Grid.Row="1" Content="(Format) dd.MM.yyyy HH:mm:ss" Foreground="Red" FontWeight="Bold" />
                        

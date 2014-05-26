@@ -107,7 +107,7 @@ namespace FinnTorget
 
             _picker = new Picker(new WebClient { Encoding = Encoding.UTF8 }, _config);
             _picker.ScanCompeleted += PickerOnScanCompeleted;
-            _picker.RunTimer();
+            _picker.Start();
 
             InitSettings(_config);
 
@@ -259,7 +259,7 @@ namespace FinnTorget
             _config.Interval = Convert.ToDouble(Interval);
             _config.BalloonTimeOut = Convert.ToInt32(BalloonTimeout);
 
-            _picker.UpdateConfig(_config);
+            _picker.Restart(_config);
 
             _balloonPool.UpdateTimeOut(_config.BalloonTimeOut);
 

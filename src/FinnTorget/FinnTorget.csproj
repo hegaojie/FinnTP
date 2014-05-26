@@ -62,7 +62,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FetchResult.cs" />
     <Compile Include="FinnConfig.cs" />
     <Compile Include="FinnConfigManager.cs" />
     <Compile Include="FinnHtmlParser.cs" />

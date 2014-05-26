@@ -97,8 +97,7 @@ namespace FinnTorget
 
         private DateTime GetLatestDateTime()
         {
-            var dateTime = (from torgetItem in _items select torgetItem.PublishTime).Max();
-            return dateTime;
+            return _items.Count > 0 ? (from torgetItem in _items select torgetItem.PublishTime).Max() : new DateTime();
         }
 
         private bool FetchNewTorgetItemFromPage(int pageNo)

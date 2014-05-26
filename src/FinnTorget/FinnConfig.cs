@@ -37,7 +37,7 @@ namespace FinnTorget
 
         public bool IsStartTimeEarlierThan(DateTime newStartTime)
         {
-            return DateTime.Compare(StartTime, newStartTime) <= 0;
+            return DateTime.Compare(StartTime, newStartTime) < 0;
         }
     }
 }

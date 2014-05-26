@@ -174,9 +174,9 @@ namespace FinnTorget
 
         private void PickerOnScanCompeleted(IEnumerable<TorgetItem> torgets, DateTime newStartTime)
         {
-            if (torgets == null) return;
+            if (torgets == null || !torgets.Any()) return;
 
-            bool newTorgetAdded = false;
+            var newTorgetAdded = false;
             foreach (var torgetItem in torgets)
             {
                 if (!_items.Contains(torgetItem))

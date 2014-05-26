@@ -73,28 +73,19 @@ namespace FinnTorget
 
         private void ScanFinnTorgetPages()
         {
-            FetchResult result;
-            var startPage = 1;
-            do
-            {
-                result = ScanFinnTorgetPage(startPage++);
-            } while (result.Continue);
-        }
-
-        private FetchResult ScanFinnTorgetPage(int pageNo)
-        {
-            var result = new FetchResult { Continue = true };
-
             try
             {
-                result = FetchNewTorgetItemFromPage(pageNo);
+                FetchResult result;
+                var startPage = 1;
+                do
+                {
+                    result = FetchNewTorgetItemFromPage(startPage++);
+                } while (result.Continue);
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
-
-            return result;
         }
 
         private FetchResult FetchNewTorgetItemFromPage(int pageNo)
@@ -106,9 +97,7 @@ namespace FinnTorget
         private FetchResult AddNewTorgetItems(IEnumerable<HtmlNode> items)
         {
             foreach (var torgetItem in items.Where(IsNewTorgetItem).Select(CreateTorgetItem))
-            {
                 _items.Add(torgetItem);
-            }
 
             return new FetchResult{Continue = items.All(IsNewTorgetItem)};
         }

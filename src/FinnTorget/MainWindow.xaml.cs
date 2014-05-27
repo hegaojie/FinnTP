@@ -174,31 +174,39 @@ namespace FinnTorget
 
         private void PickerOnScanCompeleted(IEnumerable<TorgetItem> torgets, DateTime newStartTime)
         {
-            if (torgets == null || !torgets.Any()) return;
+            if (IsEmpty(torgets)) return;
 
-            var newTorgetAdded = false;
-            foreach (var torgetItem in torgets)
+            if (HasNewTorgetsAdded(torgets))
             {
-                if (!_items.Contains(torgetItem))
-                {
-                    _items.Add(torgetItem);
-                    newTorgetAdded = true;
-
-                    if (_balloonPool.Count < BalloonPool.MAXIMUM_COUNT)
-                    {
-                        var fb = new FancyBalloon { BalloonText = torgetItem.Text };
-                        _balloonPool.ShowSingle(fb);
-                        PlayNotifySound();
-                    }
-                }
-            }
-
-            if (newTorgetAdded)
-            {
-                OnPropertyChanged("Items");
                 _notifyIcon.BlinkIcon();
                 UpdateStartTime(newStartTime);
+                OnPropertyChanged("Items");
             }
+
+            foreach (var torgetItem in torgets.Where(torgetItem => !_items.Contains(torgetItem)))
+            {
+                _items.Add(torgetItem);
+                DisplayBalloonAndPlaySound(torgetItem);
+            }
+        }
+
+        private static bool IsEmpty(IEnumerable<TorgetItem> torgets)
+        {
+            return torgets == null || !torgets.Any();
+        }
+
+        private void DisplayBalloonAndPlaySound(TorgetItem torgetItem)
+        {
+            if (_balloonPool.Count < BalloonPool.MAXIMUM_COUNT)
+            {
+                _balloonPool.ShowSingle(new FancyBalloon { BalloonText = torgetItem.Text });
+                PlayNotifySound();
+            }
+        }
+
+        private bool HasNewTorgetsAdded(IEnumerable<TorgetItem> items)
+        {
+            return items.Any(i => !_items.Contains(i));
         }
 
         private void UpdateStartTime(DateTime newStartTime)

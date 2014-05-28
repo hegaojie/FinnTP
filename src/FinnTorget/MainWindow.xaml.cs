@@ -192,7 +192,7 @@ namespace FinnTorget
 
         private static bool IsEmpty(IEnumerable<TorgetItem> torgets)
         {
-            return torgets == null || !torgets.Any();
+            return !torgets.Any();
         }
 
         private void DisplayBalloonAndPlaySound(TorgetItem torgetItem)
